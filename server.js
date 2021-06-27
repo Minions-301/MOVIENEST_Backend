@@ -5,106 +5,42 @@ const cors=require('cors');
 require('dotenv').config();
 const app = express();
 app.use(cors());
-app.use(express.json());
-const reviewFunction=require('./review')
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/books', { useNewUrlParser: true, useUnifiedTopology: true });
-
-//create a schema
-const MovieSchema = new mongoose.Schema({
-  id: String,
-  nameMovie: String,
-  overview : String ,
-  rating : Number ,
-  img : String,
-  avg : Number ,
-  isWatched : Boolean
-
-});
-
-
-//create a schema
-const UserSchema = new mongoose.Schema({
-  nameUser : String ,
-  email: String,
-  movies: [MovieSchema]
-});
-
-
-
-//create a model 
-const movieModel = mongoose.model('movies', MovieSchema);
-
-//create a model
-const userModel = mongoose.model('users', UserSchema);
-
-
-
-function getWatchedMovie (req,res){
-
-  const { email } = req.query;
-  userModel.findOne({ email: email }, (error, user) => {
-      if (error) {
-          res.send(error);
-      } 
-  
-     else{
-      const watchList=user.movies.map(item=>{
-        if (item.isWatched) {
-          return true;
-        }
-        res.send(watchList);
-      }
-      )
-  
-    
-      };
-  
-
-
-
-function getWatchListMovies(req, res) {
-  const { email } = req.query;
-  userModel.findOne({ email: email }, (error, user) => {
-      if (error) {
-          res.send(error);
-      } 
-  
-     else{
-          const watchList=user.movies.map(item=>{
-            if (!item.isWatched) {
-              return true;
-            }
-            res.send(watchList);
-          }
-          )
-  
-      };
-   
-    
-
-
-
-
-
-app.get('/movies', getWatchListMovies);
-
-
-
-
-
-
+const user = require('./controller/users');
+const movies = require('./controller/movies');
+const reviews = require('./controller/reviews');
 
 
 app.get('/', function (req, res) {
     res.send('Hello MoveNest')
   });
 
-  
-app.post('/review',reviewFunction.addReviews);
-app.delete('/review',reviewFunction.deleteReview);
-app.put('/review',reviewFunction.updateReview);
+
+  const MDB_Concetion_String = async ()=>{
+    try{
+      mongoose.connect(process.env.MN_DB,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+      );
+    }catch(err){
+      console.log(err)
+    }
+  }
+  MDB_Concetion_String();
+
+
+app.delete('/watchList', user.deleteMovieFromWatchList);
+app.put('/watchList', user.moveFromWatchListToWatched);
+app.post('/movies', user.addMovieToWatchList);
+app.get('/watchList', user.getWatchList);
+app.get('/watchedList', user.getWatchedList);
+app.get('/mostWatched',movies.getMostWatched)
+
+app.get('/reviews', reviews.getReviews);
+app.post('/reviews', reviews.addReview);
+app.delete('/reviews', reviews.deleteReview);
+app.put('/reviews', reviews.updateReview);
+
 
 
 app.listen(process.env.PORT)
