@@ -27,7 +27,7 @@ app.get('/', function (req, res) {
 
   
 
-app.delete('/watchList', user.deleteMovieFromWatchList);
+app.delete('/watchList/:id', user.deleteMovieFromWatchList);
 app.put('/watchList', user.moveFromWatchListToWatched);
 app.post('/movies', user.addMovieToWatchList);
 app.get('/watchList', user.getWatchList);
@@ -36,8 +36,8 @@ app.get('/mostWatched',movies.getMostWatched);
 
 app.get('/reviews', reviews.getReviews);
 app.post('/reviews', reviews.addReview);
-app.delete('/reviews', reviews.deleteReview);
-app.put('/reviews', reviews.updateReview);
+app.delete('/reviews/:id', reviews.deleteReview);
+app.put('/reviews/:id', reviews.updateReview);
 
 
 app.listen(process.env.PORT)

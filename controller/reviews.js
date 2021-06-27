@@ -1,28 +1,35 @@
 'use strict';
 
+const { now } = require("mongoose");
 const MoviesModel = require("../module/movies.module");
 
 const getReviews = (req, res) => {
-    const { email, name, movieId, review } = req.body;
-    MoviesModel.find({ movieId: movieId }, (error, userData) => {
+    const {movie_ID } = req.query;
+    MoviesModel.find({ movie_ID: movie_ID }, (error, userData) => {
         if (error) {
             res.send('user not exist');
-        } 
+        }
         userData.save();
         res.send(userData.reviews)
     })
 }
 
 const addReview = (req, res) => {
-    const { email, name, movieId, review } = req.body;
-    MoviesModel.find({ movieId: movieId }, (error, userData) => {
+    const { email, name, movie_ID, review } = req.body;
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy = today.getFullYear();
+    today = mm + '/' + dd + '/' + yyyy;
+    MoviesModel.MoviesModel.find({ movie_ID: movie_ID }, (error, userData) => {
         if (error) {
             res.send('user not exist');
         } else {
             userData.reviews.push({
                 review: review,
                 name: name,
-                email: email
+                email: email,
+                date: today
             })
         }
         userData.save();
@@ -31,9 +38,9 @@ const addReview = (req, res) => {
 }
 
 const deleteReview = (req, res) => {
-    const { reviewId, movieId } = req.query;
-    const review = req.params.review;
-    MoviesModel.find({ movieId }, (error, userData) => {
+    const { movie_ID } = req.query;
+    const reviewId = req.params.id;
+    MoviesModel.find({ movie_ID }, (error, userData) => {
         if (error) {
             res.send('something went wrong')
         } else {
@@ -52,16 +59,15 @@ const deleteReview = (req, res) => {
 }
 
 const updateReview = (req, res) => {
-    const { reviewId, movieId } = req.query;
-    const review = req.params.review;
-    MoviesModel.find({ movieId }, (error, userData) => {
+    const { review, movie_ID } = req.query;
+    const reviewId = req.params.id;
+    MoviesModel.find({ movie_ID }, (error, userData) => {
         if (error) {
             res.send('something went wrong')
         } else {
-            const reviesArray = userData.reviews.splice(review, 1, {
+            userData.reviews.splice(reviewId, 1, {
                 review: review
             })
-            userData.reviews = reviesArray;
             userData.save();
             res.send(userData.reviews);
 
