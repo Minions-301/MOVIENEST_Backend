@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 
 
 const ReviewsSchema = new mongoose.Schema({
-  user_name: String,
+  name: String,
+  email: String,
   review_text: String,
   date: Date,
 });
