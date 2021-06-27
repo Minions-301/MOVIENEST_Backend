@@ -2,7 +2,7 @@ const UserModel = require("../module/users.module");
 const movies = require("./movies");
 
 const addMovieToWatchList = async (req, res) => {
-    const { email, movie_ID, title, overview, release_date, runtime, vote_average } = req.body;
+    const { email, movie_ID, title, overview, release_date, vote_average } = req.body;
     console.log(request.body);
     await UserModel.UserModel.find({ email: email }, (error, userData) => {
         if (error) {
@@ -15,7 +15,6 @@ const addMovieToWatchList = async (req, res) => {
                 overview: overview,
                 moviePoster: moviePoster,
                 release_date: release_date,
-                runtime: runtime,
                 vote_average: vote_average,
                 isWatched: false,
             });
@@ -30,9 +29,46 @@ const addMovieToWatchList = async (req, res) => {
                     overview: overview,
                     moviePoster: moviePoster,
                     release_date: release_date,
-                    runtime: runtime,
                     vote_average: vote_average,
                     isWatched: false,
+                }]
+            })
+            movies.addMovie(req.body);
+            newUser.save();
+            res.send(newUser.movies)
+        }
+    });
+}
+const addMovieAsWatched = async (req, res) => {
+    const { email, movie_ID, title, overview, release_date, vote_average } = req.body;
+    console.log(request.body);
+    await UserModel.UserModel.find({ email: email }, (error, userData) => {
+        if (error) {
+            res.send(error)
+        } else if (typeof userData[0] !== 'undefined') {
+            movies.addMovie(req.body);
+            userData.movies.push({
+                movie_ID: movie_ID,
+                title: title,
+                overview: overview,
+                moviePoster: moviePoster,
+                release_date: release_date,
+                vote_average: vote_average,
+                isWatched: true,
+            });
+            userData.save();
+            res.send(userData);
+        } else {
+            const newUser = new UserModel.UserModel({
+                email: email,
+                movies: [{
+                    movie_ID: movie_ID,
+                    title: title,
+                    overview: overview,
+                    moviePoster: moviePoster,
+                    release_date: release_date,
+                    vote_average: vote_average,
+                    isWatched: true,
                 }]
             })
             movies.addMovie(req.body);
@@ -129,6 +165,7 @@ const getWatchList = (req, res) => {
 
 
 module.exports = {
+    addMovieAsWatched,
     moveFromWatchListToWatched,
     addMovieToWatchList,
     deleteMovieFromWatchList,

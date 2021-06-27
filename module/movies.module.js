@@ -8,7 +8,6 @@ const MovieSchema = new mongoose.Schema({
   overview: String,
   moviePoster: String,
   release_date: String,
-  runtime: String,
   vote_average: String,
   num_Of_Watched:Number,
   isWatched: Boolean,
