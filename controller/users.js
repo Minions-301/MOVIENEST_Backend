@@ -7,7 +7,7 @@ const addMovieToWatchList = async (req, res) => {
     await UserModel.UserModel.find({ email: email }, (error, userData) => {
         if (error) {
             res.send(error)
-        }else if (typeof userData[0]!=='undefined') {
+        } else if (typeof userData[0] !== 'undefined') {
             movies.addMovie(req.body);
             userData.movies.push({
                 movie_ID: movie_ID,
@@ -19,7 +19,7 @@ const addMovieToWatchList = async (req, res) => {
                 vote_average: vote_average,
                 isWatched: false,
             });
-            userData.save(); 
+            userData.save();
             res.send(userData);
         } else {
             const newUser = new UserModel.UserModel({
@@ -81,8 +81,57 @@ const deleteMovieFromWatchList = async (req, res) => {
     });
 }
 
+
+const getWatchedList = (req, res) => {
+
+    const { email } = req.query;
+    userModel.findOne({ email: email }, (error, user) => {
+        if (error) {
+            res.send(error);
+        }
+
+        else {
+            const watchList = user.movies.map(item => {
+                if (item.isWatched) {
+                    return true;
+                }
+                res.send(watchList);
+            }
+            )
+
+
+        }
+
+    });
+}
+
+
+const getWatchList = (req, res) => {
+    const { email } = req.query;
+    userModel.findOne({ email: email }, (error, user) => {
+        if (error) {
+            res.send(error);
+        }
+
+        else {
+            const watchList = user.movies.map(item => {
+                if (!item.isWatched) {
+                    return true;
+                }
+                res.send(watchList);
+            }
+            )
+
+        }
+    })
+}
+
+
+
 module.exports = {
     moveFromWatchListToWatched,
     addMovieToWatchList,
-    deleteMovieFromWatchList
+    deleteMovieFromWatchList,
+    getWatchedList,
+    getWatchList,
 };

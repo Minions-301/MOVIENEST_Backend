@@ -1,7 +1,7 @@
 'use strict';
 const mongoose = require('mongoose');
 const review = require ('./reviews.module');
-// creat collections in our DB using Schema
+
 const MovieSchema = new mongoose.Schema({
   movie_ID:{type:String ,nique: true},
   title: String,
@@ -14,7 +14,7 @@ const MovieSchema = new mongoose.Schema({
   isWatched: Boolean,
   reviews:[review.ReviewsSchema],
 });
-// building the model from the schema
+
 const MoviesModel = mongoose.model('movie', MovieSchema);
 
 module.exports = {
