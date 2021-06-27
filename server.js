@@ -29,6 +29,7 @@ app.get('/', function (req, res) {
 
 app.delete('/watchList/:id', user.deleteMovieFromWatchList);
 app.put('/watchList', user.moveFromWatchListToWatched);
+app.post('/moviesWatched', user.addMovieAsWatched);
 app.post('/movies', user.addMovieToWatchList);
 app.get('/watchList', user.getWatchList);
 app.get('/watchedList', user.getWatchedList);
