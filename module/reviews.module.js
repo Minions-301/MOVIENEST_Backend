@@ -7,12 +7,13 @@ const ReviewsSchema = new mongoose.Schema({
   name: String,
   email: String,
   review_text: String,
-  date: Date,
+  date: String,
 });
 
 
-//const ReviewsModel = mongoose.model('review', ReviewsSchema);
+const ReviewsModel = mongoose.model('review', ReviewsSchema);
 
 module.exports = {
   ReviewsSchema: ReviewsSchema,
+  ReviewsModel:ReviewsModel
 };

@@ -2,15 +2,17 @@
 
 const { now } = require("mongoose");
 const MoviesModel = require("../module/movies.module");
+const ReviewsModel = require("../module/reviews.module")
 
 const getReviews = (req, res) => {
-    const {movie_ID } = req.query;
-    MoviesModel.find({ movie_ID: movie_ID }, (error, userData) => {
+    const { movie_ID } = req.query;
+    console.log(movie_ID);
+    MoviesModel.MoviesModel.findOne({ movie_ID: movie_ID }, (error, movieData) => {
         if (error) {
             res.send('user not exist');
         }
-        userData.save();
-        res.send(userData.reviews)
+        console.log(movieData);
+        res.send(movieData.reviews)
     })
 }
 
@@ -21,37 +23,53 @@ const addReview = (req, res) => {
     let mm = String(today.getMonth() + 1).padStart(2, '0');
     let yyyy = today.getFullYear();
     today = mm + '/' + dd + '/' + yyyy;
-    MoviesModel.MoviesModel.find({ movie_ID: movie_ID }, (error, userData) => {
+    MoviesModel.MoviesModel.findOne({ movie_ID: movie_ID }, (error, movieData) => {
         if (error) {
             res.send('user not exist');
-        } else {
-            userData.reviews.push({
-                review: review,
-                name: name,
-                email: email,
-                date: today
-            })
+        } else if (typeof movieData != 'undefined') {
+            if (typeof movieData.reviews == 'undefined') {
+                movieData.reviews = {
+                    review_text: review,
+                    name: name,
+                    email: email,
+                    date: today
+                };
+
+            }
+            else {
+                console.log('firstelse');
+                movieData.reviews.push({
+                    review_text: review,
+                    name: name,
+                    email: email,
+                    date: today
+                })
+            }
         }
-        userData.save();
-        res.send(userData.reviews)
+        console.log(movieData.reviews);
+        movieData.save();
+        res.send(movieData.reviews)
+        //userData.reviews.save();
+
     })
 }
 
 const deleteReview = (req, res) => {
     const { movie_ID } = req.query;
     const reviewId = req.params.id;
-    MoviesModel.find({ movie_ID }, (error, userData) => {
+    MoviesModel.MoviesModel.findOne({ movie_ID }, (error, movieData) => {
         if (error) {
             res.send('something went wrong')
         } else {
-            const reviewsArray = userData.reviews.filter((item) => {
-                if (item._Id != reviewId) {
-                    return item;
+            const reviewsArray = movieData.reviews.filter((review) => {
+                if (review._id != reviewId) {
+                    return review
                 }
-            })
-            userData.reviews = reviewsArray;
-            userData.save();
-            res.send(userData.reviews);
+    
+            });
+            movieData.reviews = reviewsArray;
+            movieData.save();
+            res.send(movieData.reviews);
 
         }
     })
@@ -59,17 +77,23 @@ const deleteReview = (req, res) => {
 }
 
 const updateReview = (req, res) => {
-    const { review, movie_ID } = req.query;
+    const { review_text, movie_ID } = req.body;
     const reviewId = req.params.id;
-    MoviesModel.find({ movie_ID }, (error, userData) => {
+    console.log(reviewId, "    ", movie_ID);
+    MoviesModel.MoviesModel.findOne({ movie_ID }, (error, movieData) => {
         if (error) {
             res.send('something went wrong')
         } else {
-            userData.reviews.splice(reviewId, 1, {
-                review: review
-            })
-            userData.save();
-            res.send(userData.reviews);
+            movieData.reviews.map((review, idx) => {
+                if (review._id == reviewId) {
+                    console.log("isupdated");
+                    movieData.reviews[idx].review_text = review_text;
+                    movieData.save();
+                }
+            });
+
+            movieData.save();
+            res.send(movieData.reviews);
 
         }
     })

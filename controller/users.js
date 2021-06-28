@@ -1,13 +1,14 @@
 const UserModel = require("../module/users.module");
 const movies = require("./movies");
 
-const addMovieToWatchList = async (req, res) => {
-    const { email, movie_ID, title, overview, release_date, vote_average } = req.body;
-    console.log(request.body);
-    await UserModel.UserModel.find({ email: email }, (error, userData) => {
+const addMovieToWatchList = (req, res) => {
+    const { email, movie_ID, title, moviePoster, overview, release_date, vote_average } = req.body;
+    UserModel.UserModel.findOne({ email: email }, (error, userData) => {
         if (error) {
-            res.send(error)
-        } else if (typeof userData[0] !== 'undefined') {
+            console.log('error');
+            response.send(error)
+        } else if (userData !== null) {
+            console.log(userData);
             movies.addMovie(req.body);
             userData.movies.push({
                 movie_ID: movie_ID,
@@ -40,12 +41,11 @@ const addMovieToWatchList = async (req, res) => {
     });
 }
 const addMovieAsWatched = async (req, res) => {
-    const { email, movie_ID, title, overview, release_date, vote_average } = req.body;
-    console.log(request.body);
-    await UserModel.UserModel.find({ email: email }, (error, userData) => {
+    const { email, movie_ID, title, overview, moviePoster, release_date, vote_average } = req.body;
+    await UserModel.UserModel.findOne({ email: email }, (error, userData) => {
         if (error) {
             res.send(error)
-        } else if (typeof userData[0] !== 'undefined') {
+        } else if (typeof userData !== null) {
             movies.addMovie(req.body);
             userData.movies.push({
                 movie_ID: movie_ID,
@@ -55,8 +55,10 @@ const addMovieAsWatched = async (req, res) => {
                 release_date: release_date,
                 vote_average: vote_average,
                 isWatched: true,
+                reviews: [],
             });
             userData.save();
+            movies.incrementNumberOfWatch(movie_ID);
             res.send(userData);
         } else {
             const newUser = new UserModel.UserModel({
@@ -69,9 +71,11 @@ const addMovieAsWatched = async (req, res) => {
                     release_date: release_date,
                     vote_average: vote_average,
                     isWatched: true,
+                    reviews: [],
                 }]
             })
             movies.addMovie(req.body);
+            movies.incrementNumberOfWatch(movie_ID);
             newUser.save();
             res.send(newUser.movies)
         }
@@ -79,84 +83,91 @@ const addMovieAsWatched = async (req, res) => {
 }
 
 const moveFromWatchListToWatched = async (req, res) => {
-    const { email, movie_ID } = req.body;
-    console.log(request.body);
-    await UserModel.UserModel.find({ email: email }, (error, userData) => {
+    const { id,email } = req.body;
+
+    await UserModel.UserModel.findOne({ email: email }, (error, userData) => {
         if (error) {
             res.send(error)
         }
-        userData.movies.find({ _id: movie_ID }, (error, movie) => {
-            if (error) {
-                res.send(error)
+        userData.movies.map(  (movie,idx) => {
+            if (movie._id==id) {
+                console.log("isWatched");
+                userData.movies[idx].isWatched = true;
+                userData.save();
+                movies.incrementNumberOfWatch(movie.movie_ID);
             }
-            movie.isWatched = true;
-            movie.save();
-            movies.incrementNumberOfWatch(movie_ID);
         });
+        res.send(userData.movies);
     });
-    res.send(userData.movies);
+        
 }
 
-
+    
 const deleteMovieFromWatchList = async (req, res) => {
-    const id = Number(req.params.id);
-
+    const id = req.params.id;
     const { email } = req.query;
-    await UserModel.UserModel.find({ email: email }, (error, moviesDetails) => {
+    console.log(id);
+    await UserModel.UserModel.findOne({ email: email }, (error, userData) => {
         if (error) {
             res.send(error)
         }
+        const watchlist = userData.movies.filter((movie) => {
+            if (movie._id != id) {
+                console.log('movie._id ', movie._id);
+                return movie
+            }
 
-        const watchlist = moviesDetails.movies.filter((movie) => {
-            return movie._id !== id;
         });
-        moviesDetails.movies = watchlist;
-        moviesDetails.save();
+        console.log('W L', watchlist);
+        userData.movies = watchlist;
+        userData.save();
 
-        res.send(moviesDetails);
+        res.send(userData.movies);
     });
 }
 
 
 const getWatchedList = (req, res) => {
-
+    console.log('fromgetWatchedList');
     const { email } = req.query;
-    userModel.findOne({ email: email }, (error, user) => {
+    UserModel.UserModel.findOne({ email: email }, (error, user) => {
         if (error) {
             res.send(error);
         }
 
         else {
-            const watchList = user.movies.map(item => {
+            console.log(user);
+            const watchList = user.movies.filter(item => {
                 if (item.isWatched) {
-                    return true;
+                    return item;
                 }
-                res.send(watchList);
+
             }
             )
-
+            res.send(watchList);
 
         }
 
-    });
+    })
 }
 
 
 const getWatchList = (req, res) => {
+    console.log('getWatchList');
     const { email } = req.query;
-    userModel.findOne({ email: email }, (error, user) => {
+    UserModel.UserModel.findOne({ email: email }, (error, user) => {
         if (error) {
             res.send(error);
         }
-
         else {
-            const watchList = user.movies.map(item => {
+            const watchList = user.movies.filter(item => {
                 if (!item.isWatched) {
-                    return true;
+                    return item;
                 }
-                res.send(watchList);
+
             }
             )
+            res.send(watchList);
 
         }
     })
