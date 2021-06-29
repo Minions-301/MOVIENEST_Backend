@@ -40,7 +40,7 @@ const getMostWatched= async(req,res)=>{
 }
 
 
-const incrementNumberOfWatch = async (movie_ID) => {
+/*const incrementNumberOfWatch = async (movie_ID) => {
     console.log(movie_ID);
     await MoviesModel.MoviesModel.findOne({ movie_ID }, (error, movieData) => {
         if (error) {
@@ -52,12 +52,12 @@ const incrementNumberOfWatch = async (movie_ID) => {
        
     });
    
-}
+}*/
 
 
 
 module.exports = {
     getMostWatched,
-    incrementNumberOfWatch,
+    /*incrementNumberOfWatch,*/
     addMovie
 };

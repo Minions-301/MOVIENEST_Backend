@@ -30,6 +30,7 @@ app.put('/watchList/', user.moveFromWatchListToWatched);
 app.post('/moviesWatched', user.addMovieAsWatched);
 app.post('/movies', user.addMovieToWatchList);
 app.get('/watchList', user.getWatchList);
+app.get('/list', user.getList);
 app.get('/watchedList', user.getWatchedList);
 app.get('/mostWatched',movies.getMostWatched);
 app.get('/reviews', reviews.getReviews);
