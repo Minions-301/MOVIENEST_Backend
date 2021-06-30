@@ -3,10 +3,8 @@ const MoviesModel = require("../module/movies.module");
 
 const addMovie = async (movie) => {
     const { movie_ID, title, overview,moviePoster, release_date, runtime, vote_average } = movie;
-    console.log(movie);
     await MoviesModel.MoviesModel.findOne({ movie_ID: movie_ID }, (error, movieData) => {
         if (error) {
-            console.log(`can't add movie`);
         } else if ( movieData === null) {
             const newMovie = new  MoviesModel.MoviesModel({
                 movie_ID: movie_ID,
@@ -34,7 +32,6 @@ const getMostWatched= async(req,res)=>{
       return 1;
     }
   });
-  console.log(sortMovies);
   res.send(sortMovies.slice(4));
 
 }

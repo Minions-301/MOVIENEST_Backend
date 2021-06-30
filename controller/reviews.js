@@ -6,18 +6,18 @@ const ReviewsModel = require("../module/reviews.module")
 
 const getReviews = (req, res) => {
     const { movie_ID } = req.query;
-    console.log(movie_ID);
+ 
     MoviesModel.MoviesModel.findOne({ movie_ID: movie_ID }, (error, movieData) => {
         if (error) {
             res.send('user not exist');
         }
-        console.log(movieData);
+     
         res.send(movieData.reviews)
     })
 }
 
 const addReview = (req, res) => {
-    const { email, name, movie_ID, review } = req.body;
+    const { img,email, name, movie_ID, review } = req.body;
     let today = new Date();
     let dd = String(today.getDate()).padStart(2, '0');
     let mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -32,21 +32,21 @@ const addReview = (req, res) => {
                     review_text: review,
                     name: name,
                     email: email,
-                    date: today
+                    date: today,
+                    img:img
                 };
 
             }
             else {
-                console.log('firstelse');
                 movieData.reviews.push({
                     review_text: review,
                     name: name,
                     email: email,
-                    date: today
+                    date: today,
+                    img: img,
                 })
             }
         }
-        console.log(movieData.reviews);
         movieData.save();
         res.send(movieData.reviews)
         //userData.reviews.save();
@@ -79,14 +79,12 @@ const deleteReview = (req, res) => {
 const updateReview = (req, res) => {
     const { review_text, movie_ID } = req.body;
     const reviewId = req.params.id;
-    console.log(reviewId, "    ", movie_ID);
     MoviesModel.MoviesModel.findOne({ movie_ID }, (error, movieData) => {
         if (error) {
             res.send('something went wrong')
         } else {
             movieData.reviews.map((review, idx) => {
                 if (review._id == reviewId) {
-                    console.log("isupdated");
                     movieData.reviews[idx].review_text = review_text;
                     movieData.save();
                 }

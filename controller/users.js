@@ -5,11 +5,11 @@ const addMovieToWatchList = (req, res) => {
     const { email, movie_ID, title, moviePoster, overview, release_date, vote_average } = req.body;
     UserModel.UserModel.findOne({ email: email }, (error, userData) => {
         if (error) {
-            console.log('error');
+            
             res.send(error)
         } else if (userData != null) {
-            console.log('hi');
-            console.log( userData , "   line 12");
+      
+         
             movies.addMovie(req.body);
             userData.movies.push({
                 movie_ID: movie_ID,
@@ -92,7 +92,7 @@ const moveFromWatchListToWatched = async (req, res) => {
         }
         userData.movies.map(  (movie,idx) => {
             if (movie._id==id) {
-                console.log("isWatched");
+              
                 userData.movies[idx].isWatched = true;
                 userData.save();
                 //movies.incrementNumberOfWatch(movie.movie_ID);
@@ -107,19 +107,19 @@ const moveFromWatchListToWatched = async (req, res) => {
 const deleteMovieFromWatchList = async (req, res) => {
     const id = req.params.id;
     const { email } = req.query;
-    console.log(id);
+ 
     await UserModel.UserModel.findOne({ email: email }, (error, userData) => {
         if (error) {
             res.send(error)
         }
         const watchlist = userData.movies.filter((movie) => {
             if (movie._id != id) {
-                console.log('movie._id ', movie._id);
+             
                 return movie
             }
 
         });
-        console.log('W L', watchlist);
+       
         userData.movies = watchlist;
         userData.save();
 
@@ -150,16 +150,16 @@ const getList = (req, res) => {
 }
 
 const getWatchedList = (req, res) => {
-    console.log('fromgetWatchedList');
+
     const { email } = req.query;
-    console.log(email);
+ 
     UserModel.UserModel.findOne({ email: email }, (error, user) => {
         if (error) {
             res.send(error);
         }
 
         else if (user != null)  {
-            console.log(user);
+         
             const watchList = user.movies.filter(item => {
                 if (item.isWatched) {
                     return item;
@@ -176,10 +176,10 @@ const getWatchedList = (req, res) => {
 
 
 const getWatchList = (req, res) => {
-    console.log('getWatchList');
+   
     const { email } = req.query;
     UserModel.UserModel.findOne({ email: email }, (error, user) => {
-        console.log(user);
+      
         if (error) {
             res.send(error);
         }

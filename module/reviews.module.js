@@ -8,6 +8,7 @@ const ReviewsSchema = new mongoose.Schema({
   email: String,
   review_text: String,
   date: String,
+  img:String,
 });
 
 
