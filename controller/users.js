@@ -6,7 +6,7 @@ const addMovieToWatchList = (req, res) => {
     UserModel.UserModel.findOne({ email: email }, (error, userData) => {
         if (error) {
             console.log('error');
-            response.send(error)
+            res.send(error)
         } else if (userData != null) {
             console.log('hi');
             console.log( userData , "   line 12");
