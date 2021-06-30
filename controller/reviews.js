@@ -1,18 +1,37 @@
 'use strict';
 
 const { now } = require("mongoose");
+const moviesModule = require("../module/movies.module");
 const MoviesModel = require("../module/movies.module");
 const ReviewsModel = require("../module/reviews.module")
-
+const movies = require("./movies");
 const getReviews = (req, res) => {
-    const { movie_ID } = req.query;
+    const { movie_ID, title, overview,moviePoster, release_date, runtime, vote_average } = req.query;
  
     MoviesModel.MoviesModel.findOne({ movie_ID: movie_ID }, (error, movieData) => {
         if (error) {
             res.send('user not exist');
+        }else if ( movieData !== null) {
+            console.log( movieData);
+            res.send(movieData.reviews)
+        }else{
+            const newMovie = new  MoviesModel.MoviesModel({
+                movie_ID: movie_ID,
+                title: title,
+                overview: overview,
+                moviePoster: moviePoster,
+                release_date: release_date,
+                runtime: runtime,
+                vote_average: vote_average,
+                num_Of_Wotched:"1",
+                reviews: []
+            });
+            //movies.addMovie(req.query)
+            newMovie.save();
+            res.send(newMovie.reviews);
         }
      
-        res.send(movieData.reviews)
+        //res.send(movieData.reviews)
     })
 }
 
